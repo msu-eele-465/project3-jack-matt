@@ -31,6 +31,7 @@ void heartbeat_init(void) {
 }
 
 void heartbeat_run(void) {
+  // flip the P6.6 bit to alternate the LED on/off
   P6OUT ^= BIT6;
   return;
 }
