@@ -8,12 +8,14 @@ int main(void)
     // Stop watchdog timer
     WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
     
+    heartbeat_init();
+
     // Disable the GPIO power-on default high-impedance mdoe to activate
     // previously configure port settings
     PM5CTL0 &= ~LOCKLPM5;
 
     while(true)
     {
-        heartbeat.run();
+        
     }
 }

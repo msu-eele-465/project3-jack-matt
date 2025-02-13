@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
-void init(void);
+void heartbeat_init(void);
 
-void run(void);
+void heartbeat_run(void);
 
 #endif // HEARTBEAT_H
