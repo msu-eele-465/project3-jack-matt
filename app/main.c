@@ -1,6 +1,8 @@
 #include <msp430.h>
 #include <stdbool.h>
 
+#include "heartbeat.h"
+
 int main(void)
 {
     // Stop watchdog timer
@@ -12,5 +14,6 @@ int main(void)
 
     while(true)
     {
+        heartbeat.run();
     }
 }
