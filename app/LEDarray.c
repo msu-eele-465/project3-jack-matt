@@ -27,9 +27,9 @@ static const unsigned char IN_OUT_PATTERN[6] = {
 // Timer initialization for pattern updates
 static void init_timer(void) {
     // Using Timer A1 for pattern updates
-    TA1CCR0 = 50000;     // Initial period for 1Hz with 1MHz SMCLK
-    TA1CCTL0 = CCIE;     // Enable interrupt
-    TA1CTL = TASSEL__SMCLK | MC__UP | TACLR;
+    TB1CCR0 = 50000;     // Initial period for 1Hz with 1MHz SMCLK
+    TB1CCTL0 = CCIE;     // Enable interrupt
+    TB1CTL = TBSSEL__SMCLK | MC__UP | TBCLR;
 }
 
 void ledarray_init(void) {
@@ -62,7 +62,7 @@ void ledarray_set_transition_period(float period) {
     
     // Update timer period
     unsigned int timer_counts = (unsigned int)(period * 1000000); // Assuming 1MHz SMCLK
-    TA1CCR0 = timer_counts;
+    TB1CCR0 = timer_counts;
 }
 
 float ledarray_get_transition_period(void) {
