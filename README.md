@@ -6,8 +6,12 @@ In this project, a keypad will be used to select from different time-varying pat
 
 ## Flow Chart
 
+![Alt text](docs/flowcharts/Project3_Flowchart-main.drawio.svg)
+
 ## Circuit Diagram
+
+![Alt text](docs/flowcharts/CircuitDiagram.drawio.svg)
 
 ## Software Architecture
 
-
+![Alt text](docs/flowcharts/Project03_SystemArch.png)
