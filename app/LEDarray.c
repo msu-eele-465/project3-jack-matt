@@ -34,14 +34,14 @@ static void init_timer(void) {
 
 void ledarray_init(void) {
     // Configure LED pins as outputs
-    P5DIR |= LED_PINS;
-    P5OUT &= ~LED_PINS;  // All LEDs off initially
+    P3DIR |= LED_PINS;
+    P3OUT |= LED_PINS;  // All LEDs off initially
     
     init_timer();
 }
 
 void ledarray_all_off(void) {
-    P5OUT &= ~LED_PINS;
+    P3OUT |= LED_PINS;
     pattern_active = false;
     current_pattern = PATTERN_NONE;
 }
@@ -84,26 +84,26 @@ void ledarray_update(void) {
     
     switch (current_pattern) {
         case PATTERN_0_STATIC:
-            P5OUT = (P5OUT & ~LED_PINS) | STATIC_PATTERN;
+            P3OUT = (P3OUT & ~LED_PINS) | STATIC_PATTERN;
             break;
             
         case PATTERN_1_TOGGLE:
-            P5OUT = (P5OUT & ~LED_PINS) | TOGGLE_PATTERN[pattern_step];
+            P3OUT = (P3OUT & ~LED_PINS) | TOGGLE_PATTERN[pattern_step];
             pattern_step = (pattern_step + 1) % 2;
             break;
             
         case PATTERN_2_UP_COUNT:
-            P5OUT = (P5OUT & ~LED_PINS) | pattern_step;
+            P3OUT = (P3OUT & ~LED_PINS) | pattern_step;
             pattern_step = (pattern_step + 1) % 256;
             break;
             
         case PATTERN_3_IN_OUT:
-            P5OUT = (P5OUT & ~LED_PINS) | IN_OUT_PATTERN[pattern_step];
+            P3OUT = (P3OUT & ~LED_PINS) | IN_OUT_PATTERN[pattern_step];
             pattern_step = (pattern_step + 1) % 6;
             break;
             
         default:
-            P5OUT &= ~LED_PINS;
+            P3OUT |= LED_PINS;
             break;
     }
 }
