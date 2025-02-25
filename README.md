@@ -15,3 +15,8 @@ In this project, a keypad will be used to select from different time-varying pat
 ## Software Architecture
 
 ![Alt text](docs/flowcharts/Project03_SystemArch.png)
+
+## Unlocking Demo
+
+[Video Title](https://www.youtube.com/shorts/PN20tyw8jiM)
+
