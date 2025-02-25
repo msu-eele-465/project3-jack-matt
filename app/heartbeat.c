@@ -1,5 +1,4 @@
 #include <msp430.h>
-
 #include "heartbeat.h"
 
 void heartbeat_init(void) {
@@ -19,7 +18,7 @@ void heartbeat_init(void) {
   // 0.004873294/(.000001*7) = 696.184857143
   TB1CCR0 = 65535;
 
-  //TB1CTL |= ID__4;            // setting divider D1
+  //TB1CTL |= ID__4;          // setting divider D1
   TB1EX0 |= TBIDEX__7;        // setting divider D2
 
   TB1CCTL0 |= CCIE;           // Clear ISR flag
@@ -41,4 +40,5 @@ __interrupt void heartbeat_timer(void)
 {
     heartbeat_run();
     TB0CTL &= ~TBIFG;
+    return;
 }
