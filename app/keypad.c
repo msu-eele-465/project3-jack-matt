@@ -1,22 +1,28 @@
 #include "keypad.h"
+#include "RGB.h"
+#include "intrinsics.h"
 #include <msp430.h>
 
 // Keypad matrix mapping
-static const char keymap[4][4] = {{'1', '2', '3', 'A'},
-                                  {'4', '5', '6', 'B'},
+static const char keymap[4][4] = {{'*', '0', '#', 'D'},
                                   {'7', '8', '9', 'C'},
-                                  {'*', '0', '#', 'D'}};
+                                  {'4', '5', '6', 'B'},
+                                  {'1', '2', '3', 'A'}
+                                  };
 
 // Unlock code (can be changed)
-static const char unlock_code[4] = {'1', '2', '3', '4'};
+static char unlock_code[4] = {'1', '1', '3', '4'};
 static char entered_code[4];
 static unsigned char code_index = 0;
 static bool is_unlocked = false;
+static system_state_t current_state = SYSTEM_LOCKED;
 
 void keypad_init(void) {
   // Configure LED pin as output
   P1DIR |= LED_PIN;
   LED_PORT &= ~LED_PIN; // LED off initially
+
+  rgb_init();
 
   // Configure row pins as outputs
   P4DIR |= ROW_PINS;
@@ -26,11 +32,14 @@ void keypad_init(void) {
   P6DIR &= ~COL_PINS;
   P6REN |= COL_PINS; // Enable pull-up/down resistors
   P6OUT |= COL_PINS; // Set pull-up
+
+  //rgb_set_color(0, 0, 0);
+  return;
 }
 
 char keypad_scan(void) {
   char key = 0;
-  unsigned char row, col;
+  int row, col;
 
   // Scan each row
   for (row = 0; row < 4; row++) {
@@ -38,16 +47,13 @@ char keypad_scan(void) {
     ROW_PORT = (ROW1_PIN << row);
 
     // Small delay for signal to stabilize
-    __delay_cycles(1000);
+    int i; 
+    for (i = 0; i<7000; i++){}
 
     // Read columns
-    unsigned char cols = (~COL_IN) & 0x0F; // Read and invert (buttons pull low)
+    unsigned int cols = (~COL_IN) & 0x0F; // Read and invert (buttons pull low)
 
     if (cols) {               // If any column is low (button pressed)
-      LED_PORT |= LED_PIN;    // Turn on LED when key pressed
-      __delay_cycles(100000); // Delay for visibility
-      LED_PORT &= ~LED_PIN;   // Turn off LED
-
       for (col = 0; col < 4; col++) {
         if (cols & (1 << col)) {
           key = keymap[row][col];
@@ -63,11 +69,12 @@ char keypad_scan(void) {
 
   // If a key was pressed, process it for unlock code
   if (key && !is_unlocked) {
+    rgb_set_color(0, 0, 1);
     entered_code[code_index] = key;
-    code_index = (code_index + 1) % 4;
-
+    code_index = (code_index + 1) % 5;
     // Check code when 4 digits entered
-    if (code_index == 0) {
+    if (code_index == 4) {
+      code_index = 0;
       keypad_check_unlock();
     }
   }
@@ -76,17 +83,23 @@ char keypad_scan(void) {
 }
 
 bool keypad_check_unlock(void) {
-  unsigned char i;
+  int i;
   bool match = true;
 
   for (i = 0; i < 4; i++) {
     if (entered_code[i] != unlock_code[i]) {
       match = false;
-      break;
     }
   }
-
   is_unlocked = match;
+  if (is_unlocked) {
+    current_state = SYSTEM_UNLOCKED;
+    rgb_set_color(0, 1, 0);
+  } else {
+    current_state = SYSTEM_LOCKED;
+    rgb_set_color(1, 0, 0);
+  }
+
   return match;
 }
 
