@@ -26,10 +26,25 @@ static const unsigned char IN_OUT_PATTERN[6] = {
 
 // Timer initialization for pattern updates
 static void init_timer(void) {
-    // Using Timer A1 for pattern updates
-    TB1CCR0 = 50000;     // Initial period for 1Hz with 1MHz SMCLK
-    TB1CCTL0 = CCIE;     // Enable interrupt
-    TB1CTL = TBSSEL__SMCLK | MC__UP | TBCLR;
+    //-- SETUP TIMER -------------------------------------------------------
+    TB0CTL |= TBCLR;
+    TB0CTL |= TBSSEL__SMCLK;     // Source SMCLK
+    TB0CTL |= MC__UP;
+    TB0CTL |= CNTL_0;
+
+    // 15/513 = 0.029239766
+    // 0.029239766÷(0.000001×7) = 4177.109428571
+    // 2.5/513 = 0.004873294
+    // 0.004873294/(.000001*7) = 696.184857143
+    TB0CCR0 = 65535;
+
+    //TB1CTL |= ID__4;          // setting divider D1
+    TB0EX0 |= TBIDEX__7;        // setting divider D2
+
+    TB0CCTL0 |= CCIE;           // Clear ISR flag
+    TB0CCTL0 &= ~CCIFG;         // Enable timer interrupt
+
+    __enable_interrupt();       // Enable Maskable IRQs
 }
 
 void ledarray_init(void) {
@@ -109,7 +124,7 @@ void ledarray_update(void) {
 }
 
 // Timer A1 interrupt handler
-#pragma vector = TIMER1_A0_VECTOR
+#pragma vector = TIMER0_B0_VECTOR
 __interrupt void Timer1_A0_ISR(void) {
     // Update LED pattern
     ledarray_update();
