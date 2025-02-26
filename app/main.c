@@ -15,7 +15,7 @@ int main(void)
     ledarray_init();
     keypad_init();
     heartbeat_init();
-    ledarray_select_pattern(PATTERN_1_TOGGLE);
+    // ledarray_select_pattern(PATTERN_1_TOGGLE);
 
     // Disable the GPIO power-on default high-impedance mdoe to activate
     // previously configure port settings

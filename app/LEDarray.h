@@ -20,8 +20,8 @@
 typedef enum {
     PATTERN_NONE = -1,
     PATTERN_0_STATIC = 0,    // 10101010 static
-    PATTERN_1_TOGGLE,        // Toggle pattern
-    PATTERN_2_UP_COUNT,      // Count up
+    PATTERN_1_TOGGLE = 1,        // Toggle pattern
+    PATTERN_2_UP_COUNT = 2,      // Count up
     PATTERN_3_IN_OUT,        // In and out pattern
     NUM_PATTERNS
 } led_pattern_t;

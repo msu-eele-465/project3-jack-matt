@@ -1,17 +1,18 @@
 #include "keypad.h"
+#include "LEDarray.h"
 #include "RGB.h"
 #include "intrinsics.h"
 #include <msp430.h>
 
 // Keypad matrix mapping
-static const char keymap[4][4] = {{'*', '0', '#', 'D'},
-                                  {'7', '8', '9', 'C'},
+static const char keymap[4][4] = {{'1', '2', '3', 'A'},
                                   {'4', '5', '6', 'B'},
-                                  {'1', '2', '3', 'A'}
+                                  {'7', '8', '9', 'C'},
+                                  {'*', '0', '#', 'D'}
                                   };
 
 // Unlock code (can be changed)
-static char unlock_code[4] = {'1', '1', '3', '4'};
+static char unlock_code[4] = {'1', '2', '3', '4'};
 static char entered_code[4];
 static unsigned char code_index = 0;
 static bool is_unlocked = false;
@@ -31,7 +32,7 @@ void keypad_init(void) {
   // Configure column pins as inputs with pull-up resistors
   P6DIR &= ~COL_PINS;
   P6REN |= COL_PINS; // Enable pull-up/down resistors
-  P6OUT |= COL_PINS; // Set pull-up
+  P6OUT &= ~COL_PINS; // Set pull-down
 
   //rgb_set_color(0, 0, 0);
   return;
@@ -51,12 +52,15 @@ char keypad_scan(void) {
     for (i = 0; i<7000; i++){}
 
     // Read columns
-    unsigned int cols = (~COL_IN) & 0x0F; // Read and invert (buttons pull low)
+    unsigned int cols = (COL_IN) & 0x0F; // Read and invert (buttons pull low)
 
     if (cols) {               // If any column is low (button pressed)
       for (col = 0; col < 4; col++) {
         if (cols & (1 << col)) {
           key = keymap[row][col];
+          while(cols !=0 ){
+            cols = (COL_IN) & 0x0F;
+          }
           break;
         }
       }
@@ -76,6 +80,36 @@ char keypad_scan(void) {
     if (code_index == 4) {
       code_index = 0;
       keypad_check_unlock();
+    }
+  }
+  else if (key && is_unlocked){
+    switch(key){
+      case 'A':
+        ledarray_decrease_period();
+        break;
+      case 'B':
+        ledarray_increase_period();
+        break;
+      case 'D':
+        entered_code[0] = 'G';
+        is_unlocked=false;
+        keypad_check_unlock();
+        break;
+      case '1':
+        ledarray_select_pattern(PATTERN_1_TOGGLE);
+        break;check_unlock();
+        break;
+      case '2':
+        ledarray_select_pattern(PATTERN_2_UP_COUNT);
+        break;check_unlock();
+        break;
+      case '3':
+        ledarray_select_pattern(PATTERN_3_IN_OUT);
+        break;check_unlock();
+        break;
+      case '0':
+        ledarray_select_pattern(PATTERN_0_STATIC);
+        break;
     }
   }
 
